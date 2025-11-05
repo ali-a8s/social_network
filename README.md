@@ -1,6 +1,6 @@
-* Social Network with Django
+# Social Network with Django
 
-**** _Features_
+## _Features_
 + user register, login (with username or email) and logout
 + check if username/email already exitst or not 
 + user profile and list of his posts
