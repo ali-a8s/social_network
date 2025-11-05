@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+
+{% block title %} {{ post.title }} {% endblock  %}
+
+
+{% block content %}
+    {% if request.user.id == post.user.id %}
+        <a href="{% url "home:post_update" post.id %}" class="btn btn-primary">Update</a>
+        <a href="{% url "home:post_delete" post.id %}" class="btn btn-danger">Delete</a>
+        <br><br>
+    {% endif %}
+
+    <h3>{{ post.title }}</h3>
+    <small>[ <a href="{% url "accounts:user_profile" post.user.id %}">{{ post.user.username }}</a> - {{ post.updated }} ]</small>
+    <p><i>{{ post.body }}</i></p>
+{% endblock  %}

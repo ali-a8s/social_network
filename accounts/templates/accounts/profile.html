@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+
+{% block title %} {{ user.username }}'s Profile {% endblock  %}
+
+
+{% block content %}
+    <h3 class="text-center">{{ user.username }}</h3>
+
+    {% if request.user.is_authenticated %}
+        <div class="d-flex justify-content-start" style="max-width: 600px; margin: 0 auto 0; padding-left: 20px;">
+            <a href="{% url "home:post_create" %}" class="btn btn-info">Create</a>
+        </div>
+    {% endif %}
+
+
+    <div class="card mx-auto" style="max-width: 600px; padding: 20px; margin: 20px;">
+        {% for post in posts %}
+            <a href="{{ post.get_absolute_url }}">
+                {{ post.title }}
+            </a>
+        {% empty %}
+            <div>No posts yet.</div>
+        {% endfor %}
+    </div>
+{% endblock %}

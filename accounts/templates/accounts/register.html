@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block title %} Register {% endblock  %}
+
+
+{% block content %}
+    <div class="card mx-auto" style="max-width: 600px; padding: 20px; margin: 20px;">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value='register'>
+        </form>
+    </div>
+{% endblock  %}
