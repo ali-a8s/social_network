@@ -5,15 +5,35 @@
 
 
 {% block content %}
-    <h3 class="text-center">{{ user.username }}</h3>
 
-    {% if request.user.is_authenticated %}
+    <h3 class="text-center">{{ user.username }}</h3>
+    <p class="text-center"><i>{{ user.profile.bio }}</i></p>
+
+    {# edit profile button #}
+    {% if request.user.id == user.id %}
         <div class="d-flex justify-content-start" style="max-width: 600px; margin: 0 auto 0; padding-left: 20px;">
-            <a href="{% url "home:post_create" %}" class="btn btn-info">Create</a>
+            <a href="{% url "accounts:user_edit" %}" class="btn btn-info">
+                Edit Profile
+            </a>
         </div>
     {% endif %}
 
+    {# follow button #}
+    {% if request.user.id != user.id and not is_following %}
+        <div class="d-flex justify-content-start" style="max-width: 600px; margin: 0 auto 0; padding-left: 20px;">
+            <a href="{% url "accounts:user_follow" user.id %}" class="btn btn-success">
+                Follow
+            </a>
+        </div>
+    {% elif request.user.id != user.id and is_following %}
+        <div class="d-flex justify-content-start" style="max-width: 600px; margin: 0 auto 0; padding-left: 20px;">  
+            <a href="{% url "accounts:user_unfollow" user.id %}" class="btn btn-danger">
+                Unfollow
+            </a>
+        </div>
+    {% endif %}
 
+    {# show user's posts #}
     <div class="card mx-auto" style="max-width: 600px; padding: 20px; margin: 20px;">
         {% for post in posts %}
             <a href="{{ post.get_absolute_url }}">
@@ -23,4 +43,5 @@
             <div>No posts yet.</div>
         {% endfor %}
     </div>
+
 {% endblock %}

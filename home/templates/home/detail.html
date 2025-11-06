@@ -5,13 +5,48 @@
 
 
 {% block content %}
+
+    {# show update and delete button #}
     {% if request.user.id == post.user.id %}
         <a href="{% url "home:post_update" post.id %}" class="btn btn-primary">Update</a>
         <a href="{% url "home:post_delete" post.id %}" class="btn btn-danger">Delete</a>
         <br><br>
     {% endif %}
 
+    {# show title and body of the post #}
     <h3>{{ post.title }}</h3>
-    <small>[ <a href="{% url "accounts:user_profile" post.user.id %}">{{ post.user.username }}</a> - {{ post.updated }} ]</small>
+    <small>
+        [ {{ post.updated|date:"l j M Y" }} by 
+        <a href="{% url "accounts:user_profile" post.user.id %}">{{ post.user.username }}</a> ]
+    </small>
     <p><i>{{ post.body }}</i></p>
+    <hr>
+
+    {# show comment form and like button #}
+    {% if request.user.is_authenticated %}
+
+        <a href="{% url "home:post_like" post.id %}" class="{% if can_like %} disabled {% endif %} btn btn-primary col-md-2">
+            Like {{ post.likes_count }}
+        </a><br><br>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="send"><br><br>
+        </form>
+    {% else %}
+        <p class='alert alert-danger col-md-5'>only logged in users can write comment</p>
+    {% endif %}
+
+    {# number of the comments in this post #}
+    <p>{{ comments.count }} comments</p>
+
+    {# show comemnts #}
+    {% for comment in comments %}
+        <div class="card bg-dark text-white col-md-5">
+            <small class="card-header">{{ comment.user }} | {{ comment.created|timesince }}</small>
+            <p class="card-body">{{ comment.body }}</p>
+        </div><br>
+    {% endfor %}   
+    
 {% endblock  %}
