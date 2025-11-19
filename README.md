@@ -1,16 +1,18 @@
 # Social Network with Django
 
+![overview](site_pic.png "scr")
+
 ### _Features_
-+ user register, login (with username or email) and logout
++ user registeration, login (with username or email) and logout
 + check if username/email already exitst or not 
-+ profile for user with list of his posts
++ profile for each user with list of their posts
 + edit profile
 + customizing admin
-+ list posts on the homepage with links to their detail pages, ordered by updated time
++ list of posts on the homepage with links to their detail pages, ordered by updated time
 + create, update and delete posts 
 + add 404 error page 
 + reset password with email
-+ follow others 
++ follow and unfollow other users
 + write comments
 + like posts 
 + search into posts
