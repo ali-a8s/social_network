@@ -28,13 +28,15 @@ class UserRegistrationForm(forms.Form):
         return username
 
     def clean(self):
-        cd = super().clean()
-        p1 = cd['password1']
-        p2 = cd['password2']
-
-        if p1 and p2 and p1 != p2:
+        cleaned_data = super().clean()
+        
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        
+        if password1 and password2 and password1 != password2:
             raise ValidationError('passwords must match')
-
+        
+        return cleaned_data
 
 
 class UserLoginForm(forms.Form):
