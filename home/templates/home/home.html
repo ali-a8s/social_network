@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-center align-items-center mb-4">
+            <form action="" method='get' class="w-50">
+                <div class="input-group">
+                    {{ form.search }}
+                    <button type="submit" class="btn btn-success col-md-1">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div> 
+    </div>  
+
+    {% if posts %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                {% for post in posts %}
+                    <p class="card-body">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> <br>
+                        <small> 
+                            <b>{{ post.like_counts }} like{{ post.like_counts|pluralize }}</b>
+                            by <b>{{ post.user.username }}</b> 
+                            {{ post.updated|timesince }} ago |   
+                            {{ post.comment_counts }} comment{{ post.comment_counts|pluralize }}
+                        </small>
+                    </p>
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <p class="text-center alert alert-warning col-md-6 mx-auto">No Post Yet</p>
+    {% endif %}
+
+{% endblock %}

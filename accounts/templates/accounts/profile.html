@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- username / follow and edit buttons -->
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center">
+            <h2 class="mb-0">{{ user.username }}</h2>
+            
+            {% if request.user.id != user.id %}
+                <span class="mx-3 text-muted">|</span>
+                {% if not is_following %}
+                    <a href="{% url 'accounts:user_follow' user.id %}" class="btn btn-info btn-sm col-md-6">Follow</a>
+                {% else %}
+                    <a href="{% url 'accounts:user_unfollow' user.id %}" class="btn btn-danger btn-sm col-md-6">UnFollow</a>
+                {% endif %}
+            {% elif request.user.id == user.id %}
+                <span class="mx-3 text-muted">|</span>
+                <a href="{% url 'accounts:user_edit' %}" class="btn btn-info btn-sm col-md-6">Edit</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- profile info -->
+    <div class="text-center">
+        <p class="mb-3">{{ user.profile.age }}'s old - {{ user.profile.bio }}</p>
+        <img src="{{ user.profile.pict.url }}" alt="{{ user.username }}'s profile picture" 
+             class="img-fluid rounded" style="max-width: 300px; height: auto;">
+    </div>
+</div>
+
+<!-- display user's posts -->
+{% if posts %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                {% for post in posts %}
+                    <p class="card-body">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> <br>
+                        <small> 
+                            <b>{{ post.like_counts }} likes</b> 
+                            {{ post.updated|timesince }} ago |   
+                            {{ post.comment_counts }} comments
+                        </small>
+                    </p>
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% else %}
+    <p class="text-center alert alert-warning col-md-6 mx-auto mt-4">No Post Yet</p>
+{% endif %}
+
+{% endblock %}

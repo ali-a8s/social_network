@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center gap-3">
+            <h2 class="mb-0">Your Feed</h2>
+
+            {% if following_users %}
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Following ({{ following_users|length }})
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% for user in following_users %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" 
+                                   href="{% url 'accounts:user_profile' user.id %}">
+                                    <span>{{ user.username }}</span>
+                                </a>
+                            </li>
+                            {% if not forloop.last %}
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if posts %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card">
+                    {% for post in posts %}
+                        <p class="card-body">
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> <br>
+                            <small> 
+                                <b>{{ post.like_counts }} like{{ post.like_counts|pluralize }}</b>
+                                by <b>{{ post.user.username }}</b> 
+                                {{ post.updated|timesince }} ago |   
+                                {{ post.comment_counts }} comment{{ post.comment_counts|pluralize }}
+                            </small>
+                        </p>
+                        {% if not forloop.last %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center alert alert-warning col-md-6 mx-auto">No Post Yet</p>
+    {% endif %}
+
+{% endblock %}
