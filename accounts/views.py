@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .forms import UserRegisterForm, UserLoginForm, EditUserForm
 from django.contrib.auth.models import User
@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.models import Post
 from .models import Relation
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 
 class UserRegisterView(View):
@@ -79,7 +81,7 @@ class UserLogoutView(LoginRequiredMixin, View):
 
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        user = User.objects.get(pk=user_id)
+        user = get_object_or_404(User, pk=user_id)
         posts = Post.objects.filter(user=user)
         is_following = False
         relation = Relation.objects.filter(from_user=request.user, to_user=user)
@@ -90,7 +92,7 @@ class UserProfileView(LoginRequiredMixin, View):
 
 class UserFollowView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        target_user = User.objects.get(pk=user_id)
+        target_user = get_object_or_404(User, pk=user_id)
         relation = Relation.objects.filter(from_user=request.user, to_user=target_user)
         if relation.exists():
             messages.error(request, 'you are already following this user', 'danger')
@@ -102,7 +104,7 @@ class UserFollowView(LoginRequiredMixin, View):
 
 class UserUnFollowView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        target_user = User.objects.get(pk=user_id)
+        target_user = get_object_or_404(User, pk=user_id)
         relation = Relation.objects.filter(from_user=request.user, to_user=target_user)
         if relation.exists():
             relation.delete()
@@ -136,3 +138,21 @@ class EditUserView(LoginRequiredMixin, View):
             messages.success(request, 'profile updated successfully', 'success')
         return redirect('accounts:user_profile', request.user.id)
 
+
+class UserPasswordResetView(auth_views.PasswordResetView):
+    template_name = 'accounts/password_reset_form.html'
+    success_url = reverse_lazy('accounts:password_reset_done')
+    email_template_name = 'accounts/password_reset_email.html'
+
+
+class UserPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'accounts/password_reset_done.html'
+
+
+class UserPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'accounts/password_reset_confirm.html'
+    success_url = reverse_lazy('accounts:password_reset_complete')
+
+
+class UserPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'accounts/password_reset_complete.html'

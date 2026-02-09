@@ -11,6 +11,7 @@
 
 ## features
 - user register, login (with username and email), logout
+- password reset
 - profile page 
 - extending the existing User model
 - edit profile
