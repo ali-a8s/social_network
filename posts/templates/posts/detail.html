@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %} {{ post.title }} {% endblock title %}
+
+{% block content %}
+    {% if request.user.id == post.user.id %}
+        <a href="{% url "posts:post_delete" post.id %}" class="btn btn-danger">Delete</a><br><br>
+    {% endif %}
+
+    <div class="card" style="padding: 20px">
+        <h5>{{ post.title }}</h5>
+        <small>
+            by <a href="{% url "accounts:user_profile" post.user.id %}">{{ post.user.username }}</a>
+            at {{ post.created_at|date:"d-m-Y" }}
+        </small>
+        <hr>
+        <p>{{ post.body }}</p>
+    </div>
+{% endblock content %}

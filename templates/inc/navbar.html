@@ -4,6 +4,7 @@
         <li class="nav-item"> <a class="nav-link active" href="{% url 'posts:home' %}">Home</a> </li>
         
         {% if request.user.is_authenticated %}
+          <li class="nav-item"> <a class="nav-link active" href="{% url 'accounts:user_profile' request.user.id %}">Profile</a> </li>
           <li class="nav-item"> <a class="nav-link active" href="{% url 'accounts:user_logout' %}">Logout</a> </li>
         {% else %}
           <li class="nav-item"> <a class="nav-link active" href="{% url 'accounts:user_register' %}">Register</a> </li>
