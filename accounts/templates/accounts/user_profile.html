@@ -3,15 +3,38 @@
 {% block title %} {{ user.username }}'s profile {% endblock title %}
 
 {% block content %}
-    <div style="display: flex; justify-content: center;">
+    {# displaying username and profile #}
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <h1>{{ user.username }}</h1>
+        <small>{{ request.user.profile.bio }} | {{ request.user.profile.age }} year's old</small>
     </div>
 
+    {# edit profile option for profile owner #}
+    {% if request.user.id == user.id %}
+        <a href="{% url "accounts:user_profile" %}" class="btn btn-primary">
+            Edit Profile
+        </a> <br><br>
+    {% endif %}
+
+    {# follow or unfollow #}
+    {% if request.user.id != user.id and not is_following %}
+        <a href="{% url "accounts:user_follow" user.id %}" class="btn btn-primary">
+            Follow
+        </a><br><br>
+    {% elif request.user.id != user.id and is_following %}
+        <a href="{% url "accounts:user_unfollow" user.id %}" class="btn btn-danger">
+                UnFollow
+            </a><br><br>
+    {% endif %}
+
+    {# displaying posts #}
     <div class="card" style="padding: 20px">
         {% if posts %}
             {% for post in posts %}
                 <p>
-                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> at {{ post.created_at|date:"d-m-Y" }}
+                    [{{ post.like_count }} likes]
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
+                    at {{ post.created_at|date:"d-m-Y" }}
                 </p>
             {% endfor %}
         {% else %}

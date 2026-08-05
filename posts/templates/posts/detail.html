@@ -3,17 +3,69 @@
 {% block title %} {{ post.title }} {% endblock title %}
 
 {% block content %}
+    {# links for update and delete post #}
     {% if request.user.id == post.user.id %}
+        <a href="{% url "posts:post_update" post.id %}" class="btn btn-info">Update</a>
         <a href="{% url "posts:post_delete" post.id %}" class="btn btn-danger">Delete</a><br><br>
     {% endif %}
 
+    {# displaying post #}
     <div class="card" style="padding: 20px">
         <h5>{{ post.title }}</h5>
         <small>
             by <a href="{% url "accounts:user_profile" post.user.id %}">{{ post.user.username }}</a>
             at {{ post.created_at|date:"d-m-Y" }}
-        </small>
-        <hr>
+        </small><hr>
         <p>{{ post.body }}</p>
     </div>
+
+    <br>
+
+    {% if request.user.is_authenticated %}
+        {# like #}
+        <a href="{% url "posts:post_like" post.id %}" class="{% if can_like %}disabled{% endif %} btn btn-primary col-md-2">{{ post.like_count }} Like</a>
+        
+        <br><br>
+
+        {# form for commenting #}
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="send" class="btn btn-info"><br><br>
+        </form>
+    {% else %}
+        <p class="alert alert-info">Only logged-in users can comment...</p>
+    {% endif %}
+
+    <p>{{ comments.count }} comments...</p>
+
+    {% for comment in comments %}
+        <div class="card bg-dark text-white">
+
+            {# displaying comments #}
+            <p class="card-header">{{ comment.user.username }} | {{ comment.created_at|timesince }}'s ago</p>
+            <p class="card-body">{{ comment.body }}</p>
+
+            {# form for replying #}
+            {% if request.user.is_authenticated %}
+                <form action="{% url "posts:add_reply" post.id comment.id %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="send" class="btn btn-info"><br><br>
+                </form>
+            {% endif %}
+            
+            {# displaying replies #}
+            {% with replies=comment.rcomment.all %}
+                {% for reply in replies %}
+                    <p class="bg-primary p-3 m-2">{{ reply.user }} <br> {{ reply.body }}</p>
+                {% endfor %}
+            {% endwith %} 
+
+        </div><br>
+    {% empty %}
+        <div class="card" style="padding: 20px">
+            <p>No Comment yet</p>
+        </div>
+    {% endfor %}
 {% endblock content %}

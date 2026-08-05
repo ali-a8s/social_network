@@ -7,11 +7,23 @@
         <h3>Index Page...</h3>
     </div>
 
+    {# search bar #}
+    <form action="" method="get" class="d-flex align-items-center gap-2">
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <br>
+
+    {# display posts #}
     <div class="card" style="padding: 20px">
         {% if posts %}
             {% for post in posts %}
                 <p>
-                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> by {{ post.user.username }}
+                    [{{ post.like_count }} likes]
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
+                    by <b>{{ post.user.username }}</b>
+                    created {{ post.created_at|timesince }} ago
                 </p>
             {% endfor %}
         {% else %}

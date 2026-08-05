@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %} 405 {% endblock title %}
+
+{% block content %}
+    <div style="display: flex; justify-content: center;">
+        <h3>method not allowed - 405</h3>
+        <p>{{ request.method }} is not allowed</p>
+    </div>
+{% endblock content %}
