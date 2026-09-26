@@ -3,37 +3,102 @@
 {% block title %} {{ user.username }}'s profile {% endblock title %}
 
 {% block content %}
-    {# displaying username and profile #}
+    {# Profile info #}
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <h1>{{ user.username }}</h1>
-        <small>{{ request.user.profile.bio }} | {{ request.user.profile.age }} year's old</small>
+        <small>{{ user.profile.bio }} | {{ user.profile.age }} year's old</small>
     </div>
 
-    {# edit profile option for profile owner #}
+    {# Edit button for profile owner #}
     {% if request.user.id == user.id %}
-        <a href="{% url "accounts:user_profile" %}" class="btn btn-primary">
+        <a href="{% url 'accounts:user_profile' %}" class="btn btn-primary">
             Edit Profile
         </a> <br><br>
     {% endif %}
 
-    {# follow or unfollow #}
-    {% if request.user.id != user.id and not is_following %}
-        <a href="{% url "accounts:user_follow" user.id %}" class="btn btn-primary">
-            Follow
-        </a><br><br>
-    {% elif request.user.id != user.id and is_following %}
-        <a href="{% url "accounts:user_unfollow" user.id %}" class="btn btn-danger">
+    {# Follow/Unfollow button #}
+    {% if request.user.id != user.id %}
+        {% if is_following %}
+            <a href="{% url 'accounts:user_unfollow' user.id %}" class="btn btn-danger">
                 UnFollow
             </a><br><br>
+        {% else %}
+            <a href="{% url 'accounts:user_follow' user.id %}" class="btn btn-primary">
+                Follow
+            </a><br><br>
+        {% endif %}
     {% endif %}
 
-    {# displaying posts #}
+    <hr>
+
+    {# Followers list #}
+    <details>
+        <summary style="cursor: pointer;">
+            Followers ({{ followers.count }})
+        </summary>
+        <div style="padding: 10px 0;">
+            {% for relation in followers %}
+                <p>
+                    <a href="{% url 'accounts:user_profile' relation.from_user.id %}">
+                        {{ relation.from_user.username }}
+                    </a>
+
+                    {# If I follow this person, show an Unfollow button #}
+                    {% if relation.from_user.id in my_following_ids %}
+                        <a href="{% url 'accounts:user_unfollow' relation.from_user.id %}"
+                           class="btn btn-danger btn-sm">
+                            UnFollow
+                        </a>
+                    {% elif relation.from_user.id != request.user.id %}
+                        <a href="{% url 'accounts:user_follow' relation.from_user.id %}"
+                           class="btn btn-primary btn-sm">
+                            Follow Back
+                        </a>
+                    {% endif %}
+                </p>
+            {% empty %}
+                <p>No followers yet.</p>
+            {% endfor %}
+        </div>
+    </details>
+
+    <br>
+
+    {# Following list #}
+    <details>
+        <summary style="cursor: pointer;">
+            Following ({{ followings.count }})
+        </summary>
+        <div style="padding: 10px 0;">
+            {% for relation in followings %}
+                <p>
+                    <a href="{% url 'accounts:user_profile' relation.to_user.id %}">
+                        {{ relation.to_user.username }}
+                    </a>
+
+                    {# Only the profile owner can unfollow #}
+                    {% if request.user.id == user.id %}
+                        <a href="{% url 'accounts:user_unfollow' relation.to_user.id %}"
+                           class="btn btn-danger btn-sm">
+                            UnFollow
+                        </a>
+                    {% endif %}
+                </p>
+            {% empty %}
+                <p>Not following anyone yet.</p>
+            {% endfor %}
+        </div>
+    </details>
+
+    <hr>
+
+    {# Posts #}
     <div class="card" style="padding: 20px">
         {% if posts %}
             {% for post in posts %}
                 <p>
                     [{{ post.like_count }} likes]
-                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a> 
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
                     at {{ post.created_at|date:"d-m-Y" }}
                 </p>
             {% endfor %}

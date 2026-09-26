@@ -18,12 +18,21 @@ class Post(models.Model):
         return f"{self.user.username} posted {self.title} at {self.created_at}"
 
     def get_absolute_url(self):
+        '''
+        reverse url for post_detail
+        '''
         return reverse("posts:post_detail", args=(self.id, self.slug))
 
     def like_count(self):
+        '''
+        counts number of likes on the post
+        '''
         return self.pvote.count()
 
     def user_can_like(self, user):
+        '''
+        check if the user already likes the post.
+        '''
         user_likes = user.uvote.filter(post=self)
         if user_likes.exists():
             return True

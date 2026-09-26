@@ -3,7 +3,7 @@
 {% block title %} {{ post.title }} {% endblock title %}
 
 {% block content %}
-    {# links for update and delete post #}
+    {# update and delete post options #}
     {% if request.user.id == post.user.id %}
         <a href="{% url "posts:post_update" post.id %}" class="btn btn-info">Update</a>
         <a href="{% url "posts:post_delete" post.id %}" class="btn btn-danger">Delete</a><br><br>
@@ -37,6 +37,7 @@
         <p class="alert alert-info">Only logged-in users can comment...</p>
     {% endif %}
 
+    {# counting number of comments #}
     <p>{{ comments.count }} comments...</p>
 
     {% for comment in comments %}

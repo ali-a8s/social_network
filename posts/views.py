@@ -16,6 +16,7 @@ class HomeView(View):
 
         def get(self, request):
             posts = Post.objects.all()
+            
             if request.GET.get('search'): # search in titles and bodies
                   posts = posts.filter(Q(body__icontains=request.GET['search']) | 
                                        Q(title__icontains=request.GET['search']))
@@ -28,12 +29,16 @@ class PostDeteilView(View):
       form_clas_reply = CommentReplyForm
 
       def setup(self, request, *args, **kwargs):
+          '''
+          getting the post
+          '''
           self.post_instance = get_object_or_404(Post, id=kwargs['post_id'], slug=kwargs['post_slug'])
           return super().setup(request, *args, **kwargs)
 
       def get(self, request, *args, **kwargs):
             comments = self.post_instance.pcomment.filter(is_reply=False)
-            can_like = False
+            can_like = False 
+
             if request.user.is_authenticated and self.post_instance.user_can_like(request.user):
                   can_like = True
             return render(request, 'posts/detail.html', {'post': self.post_instance,
@@ -45,6 +50,7 @@ class PostDeteilView(View):
       @method_decorator(login_required)
       def post(self, request, *args, **kwargs):
             form = self.form_class(request.POST)
+            
             if form.is_valid():
                   new_comment = form.save(commit=False)
                   new_comment.user = request.user
@@ -61,6 +67,7 @@ class PostAddReplyView(LoginRequiredMixin, View):
             post = get_object_or_404(Post, id=post_id)
             comment = get_object_or_404(Comment, id=comment_id)
             form = self.form_class(request.POST)
+
             if form.is_valid():
                   reply = form.save(commit=False)
                   reply.user = request.user
@@ -91,6 +98,7 @@ class PostCreateView(LoginRequiredMixin, View):
 
       def post(self, request, *args, **kwargs):
             form = self.form_class(request.POST)
+
             if form.is_valid():
                   new_post = form.save(commit=False)
                   new_post.slug = slugify(form.cleaned_data['title'])
@@ -105,11 +113,18 @@ class PostUpdateView(LoginRequiredMixin, View):
       template_name = 'posts/update.html'
 
       def setup(self, request, *args, **kwargs):
+          '''
+          getting the post
+          '''
           self.post_instance = get_object_or_404(pk= kwargs['post_id'])
           return super().setup(request, *args, **kwargs)
 
       def dispatch(self, request, *args, **kwargs):
+          '''
+          check if the user is the onwer of the post
+          '''
           post = self.post_instance
+
           if request.user.id != post.user.id:
                 messages.error(request, 'you cant update this post', 'danger')
                 return redirect('posts:home')
@@ -123,6 +138,7 @@ class PostUpdateView(LoginRequiredMixin, View):
       def post(self, request, *args, **kwargs):
             post = self.post_instance
             form = self.form_class(request.POST, instance=post)
+
             if form.is_valid():
                   new_post = form.save(commit=False)
                   new_post.slug = slugify(form.cleaned_data['title'])
@@ -134,6 +150,7 @@ class PostUpdateView(LoginRequiredMixin, View):
 class PostDeleteView(LoginRequiredMixin, View):
       def get(self, request, post_id):
             post = get_object_or_404(Post, pk=post_id)
+
             if request.user.id == post.user.id:
                   post.delete()
                   messages.success(request, 'post deleted successfully', 'success')
